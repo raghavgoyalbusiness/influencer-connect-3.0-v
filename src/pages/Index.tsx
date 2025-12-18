@@ -146,7 +146,7 @@ export default function Index() {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <Zap className="w-5 h-5 text-primary-foreground" />
             </div>
-            <span className="text-xl font-bold text-foreground">Flux AI</span>
+            <span className="text-xl font-bold text-foreground">Influencer Connect</span>
           </div>
           <Button variant="outline" onClick={() => navigate('/auth')}>
             Sign In
@@ -168,7 +168,7 @@ export default function Index() {
             </span>
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
-            Flux AI uses computer vision and real-time analytics to match brands with 
+            Influencer Connect uses computer vision and real-time analytics to match brands with 
             perfect creators. Join 5,000+ agencies on our waitlist.
           </p>
         </div>
@@ -267,7 +267,7 @@ export default function Index() {
                 </li>
                 <li className="flex items-start gap-2 text-foreground">
                   <Zap className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>3 months of Flux Pro free</strong> at launch</span>
+                  <span><strong>3 months of Influencer Connect Pro free</strong> at launch</span>
                 </li>
                 <li className="flex items-start gap-2 text-foreground">
                   <Star className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
@@ -315,17 +315,6 @@ export default function Index() {
           </div>
         </div>
 
-        {/* Social Proof */}
-        <div className="max-w-3xl mx-auto mt-16 text-center">
-          <p className="text-muted-foreground mb-4">Trusted by marketing teams at</p>
-          <div className="flex flex-wrap items-center justify-center gap-8 opacity-50">
-            <span className="text-xl font-bold text-foreground">Nike</span>
-            <span className="text-xl font-bold text-foreground">Adidas</span>
-            <span className="text-xl font-bold text-foreground">Spotify</span>
-            <span className="text-xl font-bold text-foreground">Netflix</span>
-            <span className="text-xl font-bold text-foreground">Adobe</span>
-          </div>
-        </div>
       </main>
     </div>
   );
