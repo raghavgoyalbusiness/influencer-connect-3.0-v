@@ -1,1 +1,7 @@
 project_id = "casbhtutijxqcymsimub"
+
+[functions.create-priority-checkout]
+verify_jwt = false
+
+[functions.waitlist-signup]
+verify_jwt = false
