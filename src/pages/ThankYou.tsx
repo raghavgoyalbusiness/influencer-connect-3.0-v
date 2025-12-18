@@ -104,7 +104,7 @@ export default function ThankYou() {
 
   const shareOnTwitter = () => {
     const text = encodeURIComponent(
-      `Just joined the Flux AI waitlist! 🚀 The future of AI-powered influencer marketing is here. Skip the line with my referral link:`
+      `Just joined the Influencer Connect waitlist! 🚀 The future of AI-powered influencer marketing is here. Skip the line with my referral link:`
     );
     window.open(`https://twitter.com/intent/tweet?text=${text}&url=${encodeURIComponent(referralLink)}`, '_blank');
   };
@@ -178,7 +178,7 @@ export default function ThankYou() {
                 <ul className="space-y-3">
                   <li className="flex items-center gap-3 text-foreground">
                     <CheckCircle className="w-5 h-5 text-success flex-shrink-0" />
-                    <span>3 months of Flux Pro free at launch</span>
+                    <span>3 months of Influencer Connect Pro free at launch</span>
                   </li>
                   <li className="flex items-center gap-3 text-foreground">
                     <CheckCircle className="w-5 h-5 text-success flex-shrink-0" />
