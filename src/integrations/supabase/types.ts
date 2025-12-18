@@ -268,11 +268,57 @@ export type Database = {
         }
         Relationships: []
       }
+      waitlist: {
+        Row: {
+          created_at: string
+          email: string
+          id: string
+          is_priority: boolean
+          referral_code: string
+          referral_count: number
+          referred_by: string | null
+          stripe_customer_id: string | null
+          stripe_payment_intent_id: string | null
+          updated_at: string
+          waitlist_position: number | null
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          id?: string
+          is_priority?: boolean
+          referral_code?: string
+          referral_count?: number
+          referred_by?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          waitlist_position?: number | null
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          id?: string
+          is_priority?: boolean
+          referral_code?: string
+          referral_count?: number
+          referred_by?: string | null
+          stripe_customer_id?: string | null
+          stripe_payment_intent_id?: string | null
+          updated_at?: string
+          waitlist_position?: number | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      calculate_waitlist_position: {
+        Args: { waitlist_id: string }
+        Returns: number
+      }
       get_creator_id: { Args: { _user_id: string }; Returns: string }
       has_role: {
         Args: {
