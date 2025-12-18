@@ -12,6 +12,7 @@ import CreatorPortal from "./pages/CreatorPortal";
 import Payments from "./pages/Payments";
 import ThankYou from "./pages/ThankYou";
 import Admin from "./pages/Admin";
+import CampaignCreate from "./pages/CampaignCreate";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/payments" element={<Payments />} />
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/admin" element={<Admin />} />
+            <Route path="/campaign/new" element={<CampaignCreate />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
