@@ -88,7 +88,7 @@ export default function AgencyDashboard() {
               <CreditCard className="w-4 h-4" />
               Payments
             </Button>
-            <Button variant="glow" className="gap-2" onClick={() => navigate('/discovery')}>
+            <Button variant="glow" className="gap-2" onClick={() => navigate('/campaign/new')}>
               <Plus className="w-4 h-4" />
               New Campaign
             </Button>
