@@ -5,10 +5,13 @@ import { Header } from '@/components/Header';
 import { CreatorGrid } from '@/components/CreatorGrid';
 import { AILogFeed } from '@/components/AILogFeed';
 import { ROIChart } from '@/components/ROIChart';
+import { TransactionList } from '@/components/TransactionList';
+import { BudgetBreakdown } from '@/components/BudgetBreakdown';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Play, Pause, Settings, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Settings, RefreshCw, Users, Wallet, Bot } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -36,6 +39,18 @@ interface Participant {
   };
 }
 
+interface Transaction {
+  id: string;
+  amount: number;
+  type: 'escrow' | 'bonus' | 'payout';
+  status: 'locked' | 'pending' | 'released';
+  created_at: string;
+  creators?: {
+    name: string;
+    handle: string;
+  };
+}
+
 // Mock ROI data
 const mockROIData = [
   { time: '00:00', baseline: 12000, influencer: 12500 },
@@ -53,7 +68,9 @@ export default function FlightControl() {
   const navigate = useNavigate();
   const [campaign, setCampaign] = useState<Campaign | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingTransactions, setIsLoadingTransactions] = useState(true);
 
   useEffect(() => {
     if (!loading && !user) {
@@ -95,12 +112,44 @@ export default function FlightControl() {
 
       if (participantError) throw participantError;
       setParticipants(participantData || []);
+
+      // Fetch transactions
+      fetchTransactions();
     } catch (err) {
       console.error('Error fetching campaign:', err);
     } finally {
       setIsLoading(false);
     }
   };
+
+  const fetchTransactions = async () => {
+    setIsLoadingTransactions(true);
+    try {
+      const { data, error } = await supabase
+        .from('transactions')
+        .select(`
+          *,
+          creators (name, handle)
+        `)
+        .eq('campaign_id', campaignId)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setTransactions(data || []);
+    } catch (err) {
+      console.error('Error fetching transactions:', err);
+    } finally {
+      setIsLoadingTransactions(false);
+    }
+  };
+
+  // Calculate transaction totals
+  const lockedAmount = transactions
+    .filter((t) => t.status === 'locked')
+    .reduce((sum, t) => sum + t.amount, 0);
+  const releasedAmount = transactions
+    .filter((t) => t.status === 'released')
+    .reduce((sum, t) => sum + t.amount, 0);
 
   const statusVariantMap: Record<string, 'scaling' | 'optimizing' | 'halted' | 'pending' | 'draft' | 'active'> = {
     scaling: 'scaling',
@@ -181,32 +230,81 @@ export default function FlightControl() {
           </div>
         </div>
 
-        {/* Main Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left Column - Creator List & Chart */}
-          <div className="lg:col-span-2 space-y-6">
-            {/* ROI Chart */}
-            <ROIChart data={mockROIData} />
+        {/* Budget Breakdown */}
+        <BudgetBreakdown
+          totalBudget={campaign.total_budget}
+          remainingBudget={campaign.remaining_budget}
+          lockedAmount={lockedAmount}
+          releasedAmount={releasedAmount}
+        />
 
-            {/* Creator Grid */}
-            <div>
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-semibold text-foreground">Campaign Creators</h2>
-                <Button variant="outline" size="sm">
-                  Add Creators
-                </Button>
+        {/* Tabs for different sections */}
+        <Tabs defaultValue="overview" className="mt-6">
+          <TabsList className="mb-4">
+            <TabsTrigger value="overview" className="gap-2">
+              <Users className="w-4 h-4" />
+              Creators
+            </TabsTrigger>
+            <TabsTrigger value="transactions" className="gap-2">
+              <Wallet className="w-4 h-4" />
+              Transactions
+            </TabsTrigger>
+            <TabsTrigger value="ai-logs" className="gap-2">
+              <Bot className="w-4 h-4" />
+              AI Logs
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="overview">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+              {/* Left Column - Creator List & Chart */}
+              <div className="lg:col-span-2 space-y-6">
+                {/* ROI Chart */}
+                <ROIChart data={mockROIData} />
+
+                {/* Creator Grid */}
+                <div>
+                  <div className="flex items-center justify-between mb-4">
+                    <h2 className="text-lg font-semibold text-foreground">
+                      Campaign Creators ({participants.length})
+                    </h2>
+                    <Button variant="outline" size="sm" onClick={() => navigate('/discovery')}>
+                      Add Creators
+                    </Button>
+                  </div>
+                  <CreatorGrid participants={participants} />
+                </div>
               </div>
-              <CreatorGrid participants={participants} />
-            </div>
-          </div>
 
-          {/* Right Column - AI Log */}
-          <div className="lg:col-span-1">
-            <div className="glass-card h-[600px] sticky top-24">
+              {/* Right Column - Quick AI Log preview */}
+              <div className="lg:col-span-1">
+                <div className="glass-card h-[500px] sticky top-24">
+                  <AILogFeed campaignId={campaign.id} />
+                </div>
+              </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="transactions">
+            <div className="glass-card p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-semibold text-foreground">
+                  Transaction History ({transactions.length})
+                </h2>
+              </div>
+              <TransactionList 
+                transactions={transactions} 
+                isLoading={isLoadingTransactions} 
+              />
+            </div>
+          </TabsContent>
+
+          <TabsContent value="ai-logs">
+            <div className="glass-card h-[600px]">
               <AILogFeed campaignId={campaign.id} />
             </div>
-          </div>
-        </div>
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
