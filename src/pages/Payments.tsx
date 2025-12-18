@@ -1,10 +1,12 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
+import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 import { 
   ArrowLeft, 
   CreditCard, 
@@ -17,85 +19,155 @@ import {
   AlertCircle,
   DollarSign,
   Shield,
-  Plus
+  Plus,
+  RefreshCw,
+  Loader2,
+  Link as LinkIcon
 } from 'lucide-react';
 
 interface StripeConnectAccount {
   id: string;
   creatorName: string;
   creatorHandle: string;
-  stripeAccountId: string;
-  status: 'active' | 'pending' | 'restricted';
+  stripeAccountId: string | null;
+  status: 'active' | 'pending' | 'restricted' | 'not_connected';
   escrowBalance: number;
   pendingPayout: number;
   totalPaid: number;
   lastPayoutDate: string | null;
+  chargesEnabled: boolean;
+  payoutsEnabled: boolean;
 }
 
-// Mock Stripe Connect accounts
-const mockConnectAccounts: StripeConnectAccount[] = [
-  {
-    id: '1',
-    creatorName: 'Sophia Chen',
-    creatorHandle: 'sophiaminimal',
-    stripeAccountId: 'acct_1abc123xyz',
-    status: 'active',
-    escrowBalance: 12500,
-    pendingPayout: 3200,
-    totalPaid: 45600,
-    lastPayoutDate: '2024-01-15'
-  },
-  {
-    id: '2',
-    creatorName: 'Marcus Rivera',
-    creatorHandle: 'marcusvisuals',
-    stripeAccountId: 'acct_2def456uvw',
-    status: 'active',
-    escrowBalance: 8750,
-    pendingPayout: 0,
-    totalPaid: 32100,
-    lastPayoutDate: '2024-01-18'
-  },
-  {
-    id: '3',
-    creatorName: 'Aisha Patel',
-    creatorHandle: 'aisha.creates',
-    stripeAccountId: 'acct_3ghi789rst',
-    status: 'pending',
-    escrowBalance: 15000,
-    pendingPayout: 15000,
-    totalPaid: 0,
-    lastPayoutDate: null
-  },
-  {
-    id: '4',
-    creatorName: 'Jake Thompson',
-    creatorHandle: 'jakethompson',
-    stripeAccountId: 'acct_4jkl012opq',
-    status: 'restricted',
-    escrowBalance: 5200,
-    pendingPayout: 5200,
-    totalPaid: 18900,
-    lastPayoutDate: '2024-01-10'
-  },
-  {
-    id: '5',
-    creatorName: 'Luna Martinez',
-    creatorHandle: 'lunacreative',
-    stripeAccountId: 'acct_5mno345lmn',
-    status: 'active',
-    escrowBalance: 22000,
-    pendingPayout: 8500,
-    totalPaid: 67800,
-    lastPayoutDate: '2024-01-19'
-  }
-];
+interface PlatformBalance {
+  available: number;
+  pending: number;
+}
 
 export default function Payments() {
-  const { user, loading, role } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
-  const [accounts] = useState<StripeConnectAccount[]>(mockConnectAccounts);
+  const [accounts, setAccounts] = useState<StripeConnectAccount[]>([]);
+  const [platformBalance, setPlatformBalance] = useState<PlatformBalance | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [releasingEscrow, setReleasingEscrow] = useState<string | null>(null);
+
+  const fetchAccounts = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-connect-accounts');
+      if (error) throw error;
+      setAccounts(data.accounts || []);
+    } catch (error) {
+      console.error('Error fetching accounts:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to fetch Stripe Connect accounts',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  const fetchBalance = async () => {
+    try {
+      const { data, error } = await supabase.functions.invoke('stripe-balance');
+      if (error) throw error;
+      setPlatformBalance({
+        available: data.available || 0,
+        pending: data.pending || 0,
+      });
+    } catch (error) {
+      console.error('Error fetching balance:', error);
+    }
+  };
+
+  const handleRefresh = async () => {
+    setRefreshing(true);
+    await Promise.all([fetchAccounts(), fetchBalance()]);
+    setRefreshing(false);
+    toast({
+      title: 'Refreshed',
+      description: 'Account data has been updated',
+    });
+  };
+
+  const handleReleaseEscrow = async (account: StripeConnectAccount) => {
+    if (!account.stripeAccountId || account.pendingPayout <= 0) return;
+    
+    setReleasingEscrow(account.id);
+    try {
+      const { data, error } = await supabase.functions.invoke('release-escrow', {
+        body: {
+          creatorId: account.id,
+          stripeAccountId: account.stripeAccountId,
+          amount: account.pendingPayout,
+        },
+      });
+      
+      if (error) throw error;
+      
+      toast({
+        title: 'Payout Released',
+        description: `Successfully released $${account.pendingPayout.toLocaleString()} to ${account.creatorName}`,
+      });
+      
+      await fetchAccounts();
+    } catch (error) {
+      console.error('Error releasing escrow:', error);
+      toast({
+        title: 'Release Failed',
+        description: error instanceof Error ? error.message : 'Failed to release payout',
+        variant: 'destructive',
+      });
+    } finally {
+      setReleasingEscrow(null);
+    }
+  };
+
+  const handleCreateConnectAccount = async (creator: { id: string; name: string; email?: string }) => {
+    try {
+      const { data, error } = await supabase.functions.invoke('create-connect-account', {
+        body: {
+          creatorId: creator.id,
+          creatorName: creator.name,
+          creatorEmail: creator.email || `${creator.id}@placeholder.com`,
+        },
+      });
+      
+      if (error) throw error;
+      
+      if (data.onboardingUrl) {
+        window.open(data.onboardingUrl, '_blank');
+        toast({
+          title: 'Onboarding Started',
+          description: 'Creator has been redirected to complete Stripe Connect setup',
+        });
+      }
+      
+      await fetchAccounts();
+    } catch (error) {
+      console.error('Error creating connect account:', error);
+      toast({
+        title: 'Error',
+        description: 'Failed to create Stripe Connect account',
+        variant: 'destructive',
+      });
+    }
+  };
+
+  useEffect(() => {
+    const loadData = async () => {
+      setLoading(true);
+      await Promise.all([fetchAccounts(), fetchBalance()]);
+      setLoading(false);
+    };
+    
+    if (user) {
+      loadData();
+    }
+  }, [user]);
 
   const filteredAccounts = accounts.filter(account =>
     account.creatorName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,6 +186,8 @@ export default function Payments() {
         return <Badge variant="pending">Pending</Badge>;
       case 'restricted':
         return <Badge variant="halted">Restricted</Badge>;
+      case 'not_connected':
+        return <Badge variant="secondary">Not Connected</Badge>;
       default:
         return <Badge variant="secondary">{status}</Badge>;
     }
@@ -127,15 +201,20 @@ export default function Payments() {
         return <Clock className="w-4 h-4 text-warning" />;
       case 'restricted':
         return <AlertCircle className="w-4 h-4 text-destructive" />;
+      case 'not_connected':
+        return <LinkIcon className="w-4 h-4 text-muted-foreground" />;
       default:
         return null;
     }
   };
 
-  if (loading) {
+  if (authLoading || loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
+        <div className="flex flex-col items-center gap-4">
+          <Loader2 className="w-8 h-8 animate-spin text-primary" />
+          <p className="text-muted-foreground">Loading payment data...</p>
+        </div>
       </div>
     );
   }
@@ -164,14 +243,25 @@ export default function Payments() {
               <p className="text-muted-foreground">Manage creator payouts and escrow accounts</p>
             </div>
           </div>
-          <Button variant="glow" className="gap-2">
-            <Plus className="w-4 h-4" />
-            Invite Creator
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button 
+              variant="outline" 
+              className="gap-2"
+              onClick={handleRefresh}
+              disabled={refreshing}
+            >
+              <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+              Refresh
+            </Button>
+            <Button variant="glow" className="gap-2">
+              <Plus className="w-4 h-4" />
+              Invite Creator
+            </Button>
+          </div>
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           <div className="glass-card p-6">
             <div className="flex items-center gap-3 mb-4">
               <div className="w-10 h-10 rounded-lg bg-warning/20 flex items-center justify-center">
@@ -199,7 +289,7 @@ export default function Payments() {
                 </p>
               </div>
             </div>
-            <p className="text-xs text-muted-foreground">Processing for release</p>
+            <p className="text-xs text-muted-foreground">Ready for release</p>
           </div>
 
           <div className="glass-card p-6">
@@ -216,6 +306,25 @@ export default function Payments() {
             </div>
             <p className="text-xs text-muted-foreground">All-time creator earnings</p>
           </div>
+
+          {platformBalance && (
+            <div className="glass-card p-6 border-primary/30">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 rounded-lg bg-accent/20 flex items-center justify-center">
+                  <Building2 className="w-5 h-5 text-accent-foreground" />
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">Platform Balance</p>
+                  <p className="text-2xl font-bold font-mono text-foreground">
+                    ${platformBalance.available.toLocaleString()}
+                  </p>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground">
+                ${platformBalance.pending.toLocaleString()} pending
+              </p>
+            </div>
+          )}
         </div>
 
         {/* Stripe Connect Accounts */}
@@ -224,6 +333,7 @@ export default function Payments() {
             <h3 className="font-semibold text-foreground flex items-center gap-2">
               <Building2 className="w-4 h-4 text-primary" />
               Stripe Connect Accounts
+              <Badge variant="secondary">{accounts.length} creators</Badge>
             </h3>
             <div className="relative w-full md:w-64">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
@@ -267,9 +377,15 @@ export default function Payments() {
                         {getStatusIcon(account.status)}
                         {getStatusBadge(account.status)}
                       </div>
-                      <p className="text-xs text-muted-foreground font-mono mt-1">
-                        {account.stripeAccountId}
-                      </p>
+                      {account.stripeAccountId ? (
+                        <p className="text-xs text-muted-foreground font-mono mt-1">
+                          {account.stripeAccountId}
+                        </p>
+                      ) : (
+                        <p className="text-xs text-muted-foreground mt-1">
+                          No Stripe account linked
+                        </p>
+                      )}
                     </td>
                     <td className="p-4">
                       <p className="font-mono font-medium text-warning">
@@ -295,13 +411,44 @@ export default function Payments() {
                     </td>
                     <td className="p-4 text-right">
                       <div className="flex items-center justify-end gap-2">
-                        <Button variant="outline" size="sm" className="gap-1">
-                          <ExternalLink className="w-3 h-3" />
-                          Stripe
-                        </Button>
-                        {account.pendingPayout > 0 && account.status === 'active' && (
-                          <Button variant="success" size="sm">
-                            Release
+                        {account.stripeAccountId ? (
+                          <>
+                            <Button 
+                              variant="outline" 
+                              size="sm" 
+                              className="gap-1"
+                              onClick={() => window.open(`https://dashboard.stripe.com/connect/accounts/${account.stripeAccountId}`, '_blank')}
+                            >
+                              <ExternalLink className="w-3 h-3" />
+                              Stripe
+                            </Button>
+                            {account.pendingPayout > 0 && account.status === 'active' && (
+                              <Button 
+                                variant="success" 
+                                size="sm"
+                                disabled={releasingEscrow === account.id}
+                                onClick={() => handleReleaseEscrow(account)}
+                              >
+                                {releasingEscrow === account.id ? (
+                                  <Loader2 className="w-3 h-3 animate-spin" />
+                                ) : (
+                                  'Release'
+                                )}
+                              </Button>
+                            )}
+                          </>
+                        ) : (
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="gap-1"
+                            onClick={() => handleCreateConnectAccount({
+                              id: account.id,
+                              name: account.creatorName,
+                            })}
+                          >
+                            <Plus className="w-3 h-3" />
+                            Connect
                           </Button>
                         )}
                       </div>
@@ -315,7 +462,11 @@ export default function Payments() {
           {filteredAccounts.length === 0 && (
             <div className="p-8 text-center">
               <User className="w-12 h-12 mx-auto text-muted-foreground mb-4" />
-              <p className="text-muted-foreground">No accounts found matching your search</p>
+              <p className="text-muted-foreground">
+                {accounts.length === 0 
+                  ? 'No creators in the system yet' 
+                  : 'No accounts found matching your search'}
+              </p>
             </div>
           )}
         </div>
