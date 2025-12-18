@@ -5,6 +5,7 @@ import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
+import { AddToCampaignDialog } from '@/components/AddToCampaignDialog';
 import { 
   Search, 
   Upload, 
@@ -16,7 +17,9 @@ import {
   Check,
   Dna,
   Eye,
-  Camera
+  Camera,
+  FolderPlus,
+  Plus
 } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
@@ -99,6 +102,7 @@ export default function Discovery() {
   const [creators, setCreators] = useState<MockCreator[]>([]);
   const [selectedCreators, setSelectedCreators] = useState<string[]>([]);
   const [uploadedImage, setUploadedImage] = useState<string | null>(null);
+  const [showCampaignDialog, setShowCampaignDialog] = useState(false);
 
   // Simulate analysis progress
   useEffect(() => {
@@ -361,12 +365,33 @@ export default function Discovery() {
               <Button variant="outline" onClick={() => setSelectedCreators([])}>
                 Clear
               </Button>
-              <Button variant="glow">
-                Create Campaign
+              <Button 
+                variant="outline" 
+                className="gap-2"
+                onClick={() => setShowCampaignDialog(true)}
+              >
+                <FolderPlus className="w-4 h-4" />
+                Add to Campaign
+              </Button>
+              <Button 
+                variant="glow"
+                className="gap-2"
+                onClick={() => navigate('/campaign/new')}
+              >
+                <Plus className="w-4 h-4" />
+                New Campaign
               </Button>
             </div>
           </div>
         )}
+
+        {/* Add to Campaign Dialog */}
+        <AddToCampaignDialog
+          open={showCampaignDialog}
+          onOpenChange={setShowCampaignDialog}
+          selectedCreatorIds={selectedCreators}
+          onSuccess={() => setSelectedCreators([])}
+        />
 
         {/* Creator Grid */}
         {creators.length > 0 && (
