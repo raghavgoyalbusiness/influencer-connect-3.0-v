@@ -9,6 +9,7 @@ import Auth from "./pages/Auth";
 import FlightControl from "./pages/FlightControl";
 import Discovery from "./pages/Discovery";
 import CreatorPortal from "./pages/CreatorPortal";
+import Payments from "./pages/Payments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="/flight-control/:campaignId" element={<FlightControl />} />
             <Route path="/discovery" element={<Discovery />} />
             <Route path="/creator" element={<CreatorPortal />} />
+            <Route path="/payments" element={<Payments />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
