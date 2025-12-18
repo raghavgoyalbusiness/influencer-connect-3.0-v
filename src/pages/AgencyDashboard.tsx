@@ -6,7 +6,7 @@ import { MetricCard } from '@/components/MetricCard';
 import { CampaignTable } from '@/components/CampaignTable';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
-import { DollarSign, TrendingUp, Bot, Plus, Search, Filter } from 'lucide-react';
+import { DollarSign, TrendingUp, Bot, Plus, Search, CreditCard } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -84,9 +84,9 @@ export default function AgencyDashboard() {
             <p className="text-muted-foreground">Manage your influencer campaigns in real-time</p>
           </div>
           <div className="flex items-center gap-3">
-            <Button variant="outline" className="gap-2">
-              <Search className="w-4 h-4" />
-              Search
+            <Button variant="outline" className="gap-2" onClick={() => navigate('/payments')}>
+              <CreditCard className="w-4 h-4" />
+              Payments
             </Button>
             <Button variant="glow" className="gap-2" onClick={() => navigate('/discovery')}>
               <Plus className="w-4 h-4" />
