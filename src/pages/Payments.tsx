@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '@/hooks/useAuth';
 import { Header } from '@/components/Header';
 import { Button } from '@/components/ui/button';
@@ -7,6 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { FundEscrowDialog } from '@/components/FundEscrowDialog';
 import { 
   ArrowLeft, 
   CreditCard, 
@@ -22,7 +23,8 @@ import {
   Plus,
   RefreshCw,
   Loader2,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Wallet
 } from 'lucide-react';
 
 interface StripeConnectAccount {
@@ -44,16 +46,26 @@ interface PlatformBalance {
   pending: number;
 }
 
+interface Campaign {
+  id: string;
+  name: string;
+  total_budget: number;
+  remaining_budget: number;
+}
+
 export default function Payments() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const { toast } = useToast();
   const [searchQuery, setSearchQuery] = useState('');
   const [accounts, setAccounts] = useState<StripeConnectAccount[]>([]);
+  const [campaigns, setCampaigns] = useState<Campaign[]>([]);
   const [platformBalance, setPlatformBalance] = useState<PlatformBalance | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [releasingEscrow, setReleasingEscrow] = useState<string | null>(null);
+  const [fundEscrowOpen, setFundEscrowOpen] = useState(false);
 
   const fetchAccounts = async () => {
     try {
@@ -157,10 +169,57 @@ export default function Payments() {
     }
   };
 
+  const fetchCampaigns = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('campaigns')
+        .select('id, name, total_budget, remaining_budget');
+      if (error) throw error;
+      setCampaigns(data || []);
+    } catch (error) {
+      console.error('Error fetching campaigns:', error);
+    }
+  };
+
+  // Handle escrow payment success/cancel from URL params
+  useEffect(() => {
+    const escrowSuccess = searchParams.get('escrow_success');
+    const escrowCancelled = searchParams.get('escrow_cancelled');
+    const amount = searchParams.get('amount');
+    const campaignId = searchParams.get('campaign');
+
+    if (escrowSuccess === 'true') {
+      toast({
+        title: 'Escrow Funded Successfully',
+        description: `$${amount || '0'} has been added to escrow`,
+      });
+      
+      // Verify and record the payment
+      if (campaignId && amount) {
+        supabase.functions.invoke('verify-escrow-payment', {
+          body: { campaignId, amount: parseFloat(amount) },
+        }).then(() => {
+          fetchAccounts();
+          fetchCampaigns();
+        });
+      }
+      
+      // Clear URL params
+      setSearchParams({});
+    } else if (escrowCancelled === 'true') {
+      toast({
+        title: 'Checkout Cancelled',
+        description: 'Escrow funding was cancelled',
+        variant: 'destructive',
+      });
+      setSearchParams({});
+    }
+  }, [searchParams]);
+
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
-      await Promise.all([fetchAccounts(), fetchBalance()]);
+      await Promise.all([fetchAccounts(), fetchBalance(), fetchCampaigns()]);
       setLoading(false);
     };
     
@@ -253,9 +312,14 @@ export default function Payments() {
               <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               Refresh
             </Button>
-            <Button variant="glow" className="gap-2">
-              <Plus className="w-4 h-4" />
-              Invite Creator
+            <Button 
+              variant="glow" 
+              className="gap-2"
+              onClick={() => setFundEscrowOpen(true)}
+              disabled={campaigns.length === 0}
+            >
+              <Wallet className="w-4 h-4" />
+              Fund Escrow
             </Button>
           </div>
         </div>
@@ -485,6 +549,14 @@ export default function Payments() {
           </div>
         </div>
       </main>
+
+      {/* Fund Escrow Dialog */}
+      <FundEscrowDialog
+        open={fundEscrowOpen}
+        onOpenChange={setFundEscrowOpen}
+        campaigns={campaigns}
+        creators={accounts.map(a => ({ id: a.id, name: a.creatorName, handle: a.creatorHandle }))}
+      />
     </div>
   );
 }
