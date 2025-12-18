@@ -10,6 +10,7 @@ import FlightControl from "./pages/FlightControl";
 import Discovery from "./pages/Discovery";
 import CreatorPortal from "./pages/CreatorPortal";
 import Payments from "./pages/Payments";
+import ThankYou from "./pages/ThankYou";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +29,7 @@ const App = () => (
             <Route path="/discovery" element={<Discovery />} />
             <Route path="/creator" element={<CreatorPortal />} />
             <Route path="/payments" element={<Payments />} />
+            <Route path="/thank-you" element={<ThankYou />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
