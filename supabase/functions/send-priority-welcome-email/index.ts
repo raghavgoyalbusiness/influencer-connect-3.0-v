@@ -118,12 +118,12 @@ const handler = async (req: Request): Promise<Response> => {
     
     <div class="section">
       <div class="section-title">🎯 Direct Access</div>
-      <p style="margin: 0;">As a Founder, you have a direct line to our product team. We'll be reaching out shortly to schedule your <strong>1-on-1 strategy call</strong>. We want to build Flux around your agency's specific workflow.</p>
+      <p style="margin: 0;">As a Founder, you have a direct line to our product team. We'll be reaching out shortly to schedule your <strong>1-on-1 strategy call</strong>. We want to build Influencer Connect around your agency's specific workflow.</p>
     </div>
     
     <div class="section">
       <div class="section-title">🎁 Your Exclusive Bonus</div>
-      <p style="margin: 0;">Because we value speed, we've unlocked a <strong>"Vibe-Check" credit</strong> for you early. Reply to this email with your agency's website or a recent campaign mood board, and I'll personally run it through our Claude 3.5 Aesthetic Engine and send you a manual preview of what Flux sees.</p>
+      <p style="margin: 0;">Because we value speed, we've unlocked a <strong>"Vibe-Check" credit</strong> for you early. Reply to this email with your agency's website or a recent campaign mood board, and I'll personally run it through our Claude 3.5 Aesthetic Engine and send you a manual preview of what Influencer Connect sees.</p>
     </div>
     
     <p style="margin-top: 32px; font-size: 18px; font-weight: 600;">Welcome to the future of the creator economy. Let's build something massive.</p>
