@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.waitlist-signup]
 verify_jwt = false
+
+[functions.send-priority-welcome-email]
+verify_jwt = false
