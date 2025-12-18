@@ -11,6 +11,7 @@ import Discovery from "./pages/Discovery";
 import CreatorPortal from "./pages/CreatorPortal";
 import Payments from "./pages/Payments";
 import ThankYou from "./pages/ThankYou";
+import Admin from "./pages/Admin";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
             <Route path="/creator" element={<CreatorPortal />} />
             <Route path="/payments" element={<Payments />} />
             <Route path="/thank-you" element={<ThankYou />} />
+            <Route path="/admin" element={<Admin />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
