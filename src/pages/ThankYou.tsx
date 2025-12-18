@@ -51,6 +51,15 @@ export default function ThankYou() {
             setActualReferralCode(data.entry.referral_code);
             // Generate random position between 1-50 for priority
             setPosition(Math.floor(Math.random() * 50) + 1);
+            
+            // Send welcome email to priority members
+            const firstName = email.split('@')[0].split('.')[0];
+            await supabase.functions.invoke('send-priority-welcome-email', {
+              body: { 
+                email, 
+                firstName: firstName.charAt(0).toUpperCase() + firstName.slice(1),
+              },
+            });
           }
         } catch (err) {
           console.error('Error processing signup:', err);
