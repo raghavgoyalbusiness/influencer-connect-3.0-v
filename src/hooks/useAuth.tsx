@@ -59,16 +59,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         .from('user_roles')
         .select('role')
         .eq('user_id', userId)
-        .single();
+        .maybeSingle();
 
       if (error) {
         console.error('Error fetching role:', error);
+        // Default to agency if no role found
+        setRole('agency');
         return;
       }
 
-      setRole(data?.role as AppRole);
+      // Default to agency if no role exists
+      setRole((data?.role as AppRole) || 'agency');
     } catch (err) {
       console.error('Error fetching role:', err);
+      setRole('agency');
     }
   };
 
