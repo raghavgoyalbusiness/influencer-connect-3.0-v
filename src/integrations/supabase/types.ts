@@ -100,38 +100,148 @@ export type Database = {
       campaigns: {
         Row: {
           agency_user_id: string
+          cpv_rate: number | null
           created_at: string | null
           id: string
+          is_cpv_campaign: boolean | null
+          locked_budget: number | null
           name: string
           remaining_budget: number
           status: Database["public"]["Enums"]["campaign_status"]
           total_budget: number
           updated_at: string | null
           vibe_description: string | null
+          viral_threshold: number | null
         }
         Insert: {
           agency_user_id: string
+          cpv_rate?: number | null
           created_at?: string | null
           id?: string
+          is_cpv_campaign?: boolean | null
+          locked_budget?: number | null
           name: string
           remaining_budget?: number
           status?: Database["public"]["Enums"]["campaign_status"]
           total_budget?: number
           updated_at?: string | null
           vibe_description?: string | null
+          viral_threshold?: number | null
         }
         Update: {
           agency_user_id?: string
+          cpv_rate?: number | null
           created_at?: string | null
           id?: string
+          is_cpv_campaign?: boolean | null
+          locked_budget?: number | null
           name?: string
           remaining_budget?: number
           status?: Database["public"]["Enums"]["campaign_status"]
           total_budget?: number
           updated_at?: string | null
           vibe_description?: string | null
+          viral_threshold?: number | null
         }
         Relationships: []
+      }
+      content_performance: {
+        Row: {
+          campaign_id: string
+          content_url: string | null
+          created_at: string | null
+          creator_id: string
+          id: string
+          is_viral: boolean | null
+          last_synced_at: string | null
+          platform: string
+          previous_view_count: number | null
+          updated_at: string | null
+          view_count: number | null
+        }
+        Insert: {
+          campaign_id: string
+          content_url?: string | null
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          is_viral?: boolean | null
+          last_synced_at?: string | null
+          platform: string
+          previous_view_count?: number | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Update: {
+          campaign_id?: string
+          content_url?: string | null
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          is_viral?: boolean | null
+          last_synced_at?: string | null
+          platform?: string
+          previous_view_count?: number | null
+          updated_at?: string | null
+          view_count?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_performance_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_performance_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      creator_wallets: {
+        Row: {
+          created_at: string | null
+          creator_id: string
+          id: string
+          last_payout_at: string | null
+          pending_earnings: number | null
+          total_earned: number | null
+          total_withdrawn: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          last_payout_at?: string | null
+          pending_earnings?: number | null
+          total_earned?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          last_payout_at?: string | null
+          pending_earnings?: number | null
+          total_earned?: number | null
+          total_withdrawn?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "creator_wallets_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: true
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       creators: {
         Row: {
@@ -171,6 +281,61 @@ export type Database = {
           user_id?: string | null
         }
         Relationships: []
+      }
+      earnings_history: {
+        Row: {
+          amount_earned: number
+          campaign_id: string
+          content_performance_id: string | null
+          cpv_rate: number
+          created_at: string | null
+          creator_id: string
+          id: string
+          views_earned: number
+        }
+        Insert: {
+          amount_earned: number
+          campaign_id: string
+          content_performance_id?: string | null
+          cpv_rate: number
+          created_at?: string | null
+          creator_id: string
+          id?: string
+          views_earned: number
+        }
+        Update: {
+          amount_earned?: number
+          campaign_id?: string
+          content_performance_id?: string | null
+          cpv_rate?: number
+          created_at?: string | null
+          creator_id?: string
+          id?: string
+          views_earned?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "earnings_history_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "earnings_history_content_performance_id_fkey"
+            columns: ["content_performance_id"]
+            isOneToOne: false
+            referencedRelation: "content_performance"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "earnings_history_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       profiles: {
         Row: {
@@ -416,6 +581,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      calculate_cpv_earnings: {
+        Args: { p_content_performance_id: string; p_new_view_count: number }
+        Returns: number
+      }
       calculate_waitlist_position: {
         Args: { waitlist_id: string }
         Returns: number
