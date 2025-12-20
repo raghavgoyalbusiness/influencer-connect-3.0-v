@@ -13,6 +13,7 @@ import Payments from "./pages/Payments";
 import ThankYou from "./pages/ThankYou";
 import Admin from "./pages/Admin";
 import CampaignCreate from "./pages/CampaignCreate";
+import ContentRewards from "./pages/ContentRewards";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -27,10 +28,12 @@ const App = () => (
           <Routes>
             <Route path="/" element={<Index />} />
             <Route path="/auth" element={<Auth />} />
+            <Route path="/flight/:campaignId" element={<FlightControl />} />
             <Route path="/flight-control/:campaignId" element={<FlightControl />} />
             <Route path="/discovery" element={<Discovery />} />
             <Route path="/creator" element={<CreatorPortal />} />
             <Route path="/payments" element={<Payments />} />
+            <Route path="/content-rewards" element={<ContentRewards />} />
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/campaign/new" element={<CampaignCreate />} />
