@@ -6,69 +6,77 @@
 
 @layer base {
   :root {
-    /* Quant-Finance Dark Theme */
-    --background: 222 47% 5%;
-    --foreground: 210 40% 96%;
+    /* High-Contrast Finance Dark Theme */
+    --background: 220 20% 4%;
+    --foreground: 0 0% 95%;
 
-    --card: 222 47% 8%;
-    --card-foreground: 210 40% 96%;
+    --card: 220 20% 7%;
+    --card-foreground: 0 0% 95%;
 
-    --popover: 222 47% 10%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 220 20% 9%;
+    --popover-foreground: 0 0% 95%;
 
-    /* Neon Cyan Primary */
-    --primary: 187 100% 50%;
-    --primary-foreground: 222 47% 5%;
+    /* Neon Green Primary - Earnings Color */
+    --primary: 142 100% 50%;
+    --primary-foreground: 220 20% 4%;
 
     /* Deep Slate Secondary */
-    --secondary: 222 30% 15%;
-    --secondary-foreground: 210 40% 90%;
+    --secondary: 220 15% 12%;
+    --secondary-foreground: 0 0% 90%;
 
-    --muted: 222 30% 12%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 220 15% 10%;
+    --muted-foreground: 220 10% 50%;
 
-    /* Accent - Electric Blue */
-    --accent: 217 91% 60%;
-    --accent-foreground: 210 40% 98%;
+    /* Electric Blue Accent - Views Color */
+    --accent: 210 100% 55%;
+    --accent-foreground: 0 0% 98%;
 
     /* Status Colors */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 0 0% 98%;
 
-    --success: 142 76% 45%;
-    --success-foreground: 0 0% 100%;
+    --success: 142 100% 50%;
+    --success-foreground: 220 20% 4%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 0 0% 0%;
+    --warning: 45 100% 50%;
+    --warning-foreground: 220 20% 4%;
 
-    --border: 222 30% 18%;
-    --input: 222 30% 15%;
-    --ring: 187 100% 50%;
+    --border: 220 15% 15%;
+    --input: 220 15% 12%;
+    --ring: 142 100% 50%;
 
     --radius: 0.75rem;
 
-    /* Custom Design Tokens */
-    --glow-primary: 0 0 20px hsl(187 100% 50% / 0.4);
-    --glow-success: 0 0 20px hsl(142 76% 45% / 0.4);
-    --glow-warning: 0 0 20px hsl(38 92% 50% / 0.4);
-    --glow-destructive: 0 0 20px hsl(0 72% 51% / 0.4);
+    /* Neon Color Tokens */
+    --neon-green: 142 100% 50%;
+    --views-blue: 210 100% 55%;
+    --earnings-green: 142 100% 50%;
+
+    /* Custom Glow Effects */
+    --glow-primary: 0 0 30px hsl(142 100% 50% / 0.5);
+    --glow-accent: 0 0 30px hsl(210 100% 55% / 0.5);
+    --glow-success: 0 0 30px hsl(142 100% 50% / 0.5);
+    --glow-warning: 0 0 25px hsl(45 100% 50% / 0.4);
+    --glow-destructive: 0 0 25px hsl(0 85% 55% / 0.4);
 
     /* Gradients */
-    --gradient-dark: linear-gradient(180deg, hsl(222 47% 8%) 0%, hsl(222 47% 5%) 100%);
-    --gradient-card: linear-gradient(135deg, hsl(222 30% 12%) 0%, hsl(222 47% 8%) 100%);
-    --gradient-glow: linear-gradient(135deg, hsl(187 100% 50% / 0.1) 0%, hsl(217 91% 60% / 0.1) 100%);
-    --gradient-success: linear-gradient(135deg, hsl(142 76% 45% / 0.2) 0%, hsl(142 76% 45% / 0.05) 100%);
-    --gradient-warning: linear-gradient(135deg, hsl(38 92% 50% / 0.2) 0%, hsl(38 92% 50% / 0.05) 100%);
+    --gradient-dark: linear-gradient(180deg, hsl(220 20% 6%) 0%, hsl(220 20% 4%) 100%);
+    --gradient-card: linear-gradient(135deg, hsl(220 15% 10%) 0%, hsl(220 20% 7%) 100%);
+    --gradient-glow: linear-gradient(135deg, hsl(142 100% 50% / 0.1) 0%, hsl(210 100% 55% / 0.1) 100%);
+    --gradient-success: linear-gradient(135deg, hsl(142 100% 50% / 0.2) 0%, hsl(142 100% 50% / 0.05) 100%);
+    --gradient-warning: linear-gradient(135deg, hsl(45 100% 50% / 0.2) 0%, hsl(45 100% 50% / 0.05) 100%);
+    --gradient-neon: linear-gradient(135deg, hsl(142 100% 50%) 0%, hsl(160 100% 45%) 100%);
+    --gradient-blue: linear-gradient(135deg, hsl(210 100% 55%) 0%, hsl(230 100% 60%) 100%);
 
     /* Sidebar */
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 40% 90%;
-    --sidebar-primary: 187 100% 50%;
-    --sidebar-primary-foreground: 222 47% 5%;
-    --sidebar-accent: 222 30% 12%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 222 30% 15%;
-    --sidebar-ring: 187 100% 50%;
+    --sidebar-background: 220 20% 5%;
+    --sidebar-foreground: 0 0% 90%;
+    --sidebar-primary: 142 100% 50%;
+    --sidebar-primary-foreground: 220 20% 4%;
+    --sidebar-accent: 220 15% 10%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 220 15% 12%;
+    --sidebar-ring: 142 100% 50%;
   }
 
   .dark {
@@ -101,9 +109,13 @@
     background: var(--gradient-card);
   }
 
-  /* Glow effects */
+  /* High contrast glow effects */
   .glow-primary {
     box-shadow: var(--glow-primary);
+  }
+
+  .glow-accent {
+    box-shadow: var(--glow-accent);
   }
 
   .glow-success {
@@ -116,6 +128,17 @@
 
   .glow-destructive {
     box-shadow: var(--glow-destructive);
+  }
+
+  /* Neon text effects */
+  .text-neon-green {
+    color: hsl(var(--neon-green));
+    text-shadow: 0 0 10px hsl(var(--neon-green) / 0.5);
+  }
+
+  .text-views-blue {
+    color: hsl(var(--views-blue));
+    text-shadow: 0 0 10px hsl(var(--views-blue) / 0.5);
   }
 
   /* Status badges */
@@ -137,7 +160,7 @@
     @apply bg-warning/20 text-warning border border-warning/30;
   }
 
-  /* Metric card glow */
+  /* Metric card with trading platform feel */
   .metric-card {
     @apply glass-card p-6 transition-all duration-300;
   }
@@ -145,6 +168,14 @@
   .metric-card:hover {
     @apply border-primary/50;
     box-shadow: var(--glow-primary);
+  }
+
+  .metric-card-earnings {
+    @apply glass-card p-6 transition-all duration-300 border-l-4 border-l-success;
+  }
+
+  .metric-card-views {
+    @apply glass-card p-6 transition-all duration-300 border-l-4 border-l-accent;
   }
 
   /* Animated gradient border */
@@ -159,7 +190,7 @@
     position: absolute;
     inset: -1px;
     border-radius: calc(var(--radius) + 1px);
-    background: linear-gradient(135deg, hsl(187 100% 50%) 0%, hsl(217 91% 60%) 50%, hsl(142 76% 45%) 100%);
+    background: linear-gradient(135deg, hsl(142 100% 50%) 0%, hsl(210 100% 55%) 50%, hsl(142 100% 50%) 100%);
     z-index: -1;
     opacity: 0.5;
     transition: opacity 0.3s;
@@ -169,9 +200,37 @@
     opacity: 1;
   }
 
+  /* Trading platform number styling */
+  .number-positive {
+    @apply text-success font-mono;
+    text-shadow: 0 0 8px hsl(var(--neon-green) / 0.4);
+  }
+
+  .number-negative {
+    @apply text-destructive font-mono;
+  }
+
+  .number-neutral {
+    @apply text-accent font-mono;
+    text-shadow: 0 0 8px hsl(var(--views-blue) / 0.4);
+  }
+
   /* Data grid styling */
   .data-grid {
     @apply font-mono text-sm;
+  }
+
+  /* Live indicator */
+  .live-indicator {
+    @apply inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium;
+    @apply bg-success/20 text-success border border-success/30;
+    animation: pulse-glow 2s ease-in-out infinite;
+  }
+
+  .live-indicator::before {
+    content: '';
+    @apply w-2 h-2 rounded-full bg-success;
+    animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
   }
 
   /* Scrollbar styling */
@@ -194,13 +253,19 @@
     background: hsl(var(--primary) / 0.5);
   }
 
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 4px;
+  }
+
   /* Pulse animation for live indicators */
   @keyframes pulse-glow {
     0%, 100% {
       opacity: 1;
+      box-shadow: 0 0 10px hsl(var(--neon-green) / 0.3);
     }
     50% {
-      opacity: 0.5;
+      opacity: 0.8;
+      box-shadow: 0 0 20px hsl(var(--neon-green) / 0.5);
     }
   }
 
@@ -250,18 +315,57 @@
   .animate-progress {
     animation: fill-progress 1s ease-out;
   }
+
+  /* Ticker animation for live feed */
+  @keyframes ticker {
+    0% {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    10% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    90% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+  }
+
+  .animate-ticker {
+    animation: ticker 5s ease-in-out;
+  }
 }
 
 @layer utilities {
   .text-gradient {
     @apply bg-clip-text text-transparent;
-    background-image: linear-gradient(135deg, hsl(187 100% 50%) 0%, hsl(217 91% 60%) 100%);
+    background-image: linear-gradient(135deg, hsl(142 100% 50%) 0%, hsl(210 100% 55%) 100%);
+  }
+
+  .text-gradient-earnings {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(142 100% 50%) 0%, hsl(160 100% 45%) 100%);
+  }
+
+  .text-gradient-views {
+    @apply bg-clip-text text-transparent;
+    background-image: linear-gradient(135deg, hsl(210 100% 55%) 0%, hsl(230 100% 60%) 100%);
   }
 
   .bg-grid {
     background-image: 
-      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
-    background-size: 50px 50px;
+      linear-gradient(hsl(var(--border) / 0.2) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.2) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+
+  .bg-dots {
+    background-image: radial-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 }
