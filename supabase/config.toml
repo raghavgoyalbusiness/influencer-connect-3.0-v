@@ -8,3 +8,9 @@ verify_jwt = false
 
 [functions.send-priority-welcome-email]
 verify_jwt = false
+
+[functions.generate-tracking-code]
+verify_jwt = true
+
+[functions.track-event]
+verify_jwt = false

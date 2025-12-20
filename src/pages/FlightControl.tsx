@@ -7,11 +7,12 @@ import { AILogFeed } from '@/components/AILogFeed';
 import { ROIChart } from '@/components/ROIChart';
 import { TransactionList } from '@/components/TransactionList';
 import { BudgetBreakdown } from '@/components/BudgetBreakdown';
+import { TrackingCodeDashboard } from '@/components/TrackingCodeDashboard';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { supabase } from '@/integrations/supabase/client';
-import { ArrowLeft, Play, Pause, Settings, RefreshCw, Users, Wallet, Bot } from 'lucide-react';
+import { ArrowLeft, Play, Pause, Settings, RefreshCw, Users, Wallet, Bot, Link } from 'lucide-react';
 
 interface Campaign {
   id: string;
@@ -245,6 +246,10 @@ export default function FlightControl() {
               <Users className="w-4 h-4" />
               Creators
             </TabsTrigger>
+            <TabsTrigger value="tracking" className="gap-2">
+              <Link className="w-4 h-4" />
+              Tracking Codes
+            </TabsTrigger>
             <TabsTrigger value="transactions" className="gap-2">
               <Wallet className="w-4 h-4" />
               Transactions
@@ -272,7 +277,7 @@ export default function FlightControl() {
                       Add Creators
                     </Button>
                   </div>
-                  <CreatorGrid participants={participants} />
+                  <CreatorGrid participants={participants} campaignId={campaign.id} />
                 </div>
               </div>
 
@@ -282,6 +287,12 @@ export default function FlightControl() {
                   <AILogFeed campaignId={campaign.id} />
                 </div>
               </div>
+            </div>
+          </TabsContent>
+
+          <TabsContent value="tracking">
+            <div className="glass-card p-6">
+              <TrackingCodeDashboard campaignId={campaign.id} />
             </div>
           </TabsContent>
 
