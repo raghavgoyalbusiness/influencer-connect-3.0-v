@@ -199,6 +199,107 @@ export type Database = {
         }
         Relationships: []
       }
+      tracking_codes: {
+        Row: {
+          campaign_id: string
+          clicks: number | null
+          code: string
+          conversions: number | null
+          created_at: string | null
+          creator_id: string
+          discount_percent: number | null
+          id: string
+          is_active: boolean | null
+          revenue_generated: number | null
+          tracking_url: string | null
+          updated_at: string | null
+        }
+        Insert: {
+          campaign_id: string
+          clicks?: number | null
+          code: string
+          conversions?: number | null
+          created_at?: string | null
+          creator_id: string
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          revenue_generated?: number | null
+          tracking_url?: string | null
+          updated_at?: string | null
+        }
+        Update: {
+          campaign_id?: string
+          clicks?: number | null
+          code?: string
+          conversions?: number | null
+          created_at?: string | null
+          creator_id?: string
+          discount_percent?: number | null
+          id?: string
+          is_active?: boolean | null
+          revenue_generated?: number | null
+          tracking_url?: string | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_codes_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tracking_codes_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tracking_events: {
+        Row: {
+          amount: number | null
+          created_at: string | null
+          event_type: string
+          id: string
+          ip_address: string | null
+          metadata: Json | null
+          tracking_code_id: string
+          user_agent: string | null
+        }
+        Insert: {
+          amount?: number | null
+          created_at?: string | null
+          event_type: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          tracking_code_id: string
+          user_agent?: string | null
+        }
+        Update: {
+          amount?: number | null
+          created_at?: string | null
+          event_type?: string
+          id?: string
+          ip_address?: string | null
+          metadata?: Json | null
+          tracking_code_id?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tracking_events_tracking_code_id_fkey"
+            columns: ["tracking_code_id"]
+            isOneToOne: false
+            referencedRelation: "tracking_codes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       transactions: {
         Row: {
           amount: number

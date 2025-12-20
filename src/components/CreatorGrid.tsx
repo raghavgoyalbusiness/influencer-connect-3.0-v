@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { User, Sparkles, TrendingUp, Plus } from 'lucide-react';
+import { User, Sparkles, TrendingUp, Plus, Link, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 
 interface Creator {
   id: string;
@@ -15,6 +18,7 @@ interface Creator {
 interface Participant {
   id: string;
   creator_id: string;
+  campaign_id?: string;
   status: string;
   current_engagement_rate: number;
   real_time_sales_lift: number;
@@ -24,9 +28,45 @@ interface Participant {
 interface CreatorGridProps {
   participants: Participant[];
   viewType?: 'grid' | 'list';
+  campaignId?: string;
+  onTrackingCodeGenerated?: () => void;
 }
 
-export function CreatorGrid({ participants, viewType = 'list' }: CreatorGridProps) {
+export function CreatorGrid({ participants, viewType = 'list', campaignId, onTrackingCodeGenerated }: CreatorGridProps) {
+  const [generatingFor, setGeneratingFor] = useState<string | null>(null);
+
+  const handleGenerateTrackingCode = async (creatorId: string, participantCampaignId?: string) => {
+    const targetCampaignId = campaignId || participantCampaignId;
+    if (!targetCampaignId) {
+      toast.error("Campaign ID not available");
+      return;
+    }
+
+    setGeneratingFor(creatorId);
+    try {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) {
+        toast.error("Please sign in to generate tracking codes");
+        return;
+      }
+
+      const { data, error } = await supabase.functions.invoke("generate-tracking-code", {
+        body: { campaign_id: targetCampaignId, creator_id: creatorId, discount_percent: 10 },
+      });
+
+      if (error) throw error;
+
+      if (data.tracking_code) {
+        toast.success(`Tracking code generated: ${data.tracking_code.code}`);
+        onTrackingCodeGenerated?.();
+      }
+    } catch (error) {
+      console.error("Error generating tracking code:", error);
+      toast.error("Failed to generate tracking code");
+    } finally {
+      setGeneratingFor(null);
+    }
+  };
   const getStatusStyles = (status: string, salesLift: number) => {
     if (status === 'paused') {
       return 'border-destructive/50 bg-destructive/5';
@@ -130,6 +170,25 @@ export function CreatorGrid({ participants, viewType = 'list' }: CreatorGridProp
                     {participant.current_engagement_rate.toFixed(1)}%
                   </p>
                 </div>
+              </div>
+
+              {/* Actions */}
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleGenerateTrackingCode(creator.id, (participant as any).campaign_id)}
+                  disabled={generatingFor === creator.id}
+                >
+                  {generatingFor === creator.id ? (
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                  ) : (
+                    <>
+                      <Link className="w-4 h-4 mr-1" />
+                      Get Code
+                    </>
+                  )}
+                </Button>
               </div>
 
               {/* Niche Tag */}
