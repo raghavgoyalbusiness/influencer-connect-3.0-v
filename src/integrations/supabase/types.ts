@@ -97,6 +97,53 @@ export type Database = {
           },
         ]
       }
+      campaign_rewards: {
+        Row: {
+          bonus_rate_viral: number | null
+          budget_cap: number
+          campaign_id: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          min_payout_threshold: number
+          min_view_threshold: number
+          rate_per_1k_views: number
+          updated_at: string | null
+        }
+        Insert: {
+          bonus_rate_viral?: number | null
+          budget_cap?: number
+          campaign_id: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_payout_threshold?: number
+          min_view_threshold?: number
+          rate_per_1k_views?: number
+          updated_at?: string | null
+        }
+        Update: {
+          bonus_rate_viral?: number | null
+          budget_cap?: number
+          campaign_id?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          min_payout_threshold?: number
+          min_view_threshold?: number
+          rate_per_1k_views?: number
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "campaign_rewards_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: true
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       campaigns: {
         Row: {
           agency_user_id: string
@@ -208,7 +255,10 @@ export type Database = {
           creator_id: string
           id: string
           last_payout_at: string | null
+          min_payout_threshold: number | null
+          payout_status: string | null
           pending_earnings: number | null
+          stripe_account_id: string | null
           total_earned: number | null
           total_withdrawn: number | null
           updated_at: string | null
@@ -218,7 +268,10 @@ export type Database = {
           creator_id: string
           id?: string
           last_payout_at?: string | null
+          min_payout_threshold?: number | null
+          payout_status?: string | null
           pending_earnings?: number | null
+          stripe_account_id?: string | null
           total_earned?: number | null
           total_withdrawn?: number | null
           updated_at?: string | null
@@ -228,7 +281,10 @@ export type Database = {
           creator_id?: string
           id?: string
           last_payout_at?: string | null
+          min_payout_threshold?: number | null
+          payout_status?: string | null
           pending_earnings?: number | null
+          stripe_account_id?: string | null
           total_earned?: number | null
           total_withdrawn?: number | null
           updated_at?: string | null
@@ -337,6 +393,47 @@ export type Database = {
           },
         ]
       }
+      payout_requests: {
+        Row: {
+          amount: number
+          created_at: string | null
+          creator_id: string
+          error_message: string | null
+          id: string
+          processed_at: string | null
+          status: string
+          stripe_transfer_id: string | null
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          creator_id: string
+          error_message?: string | null
+          id?: string
+          processed_at?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          creator_id?: string
+          error_message?: string | null
+          id?: string
+          processed_at?: string | null
+          status?: string
+          stripe_transfer_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "payout_requests_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -363,6 +460,67 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      sales_events: {
+        Row: {
+          campaign_id: string
+          commission_amount: number
+          created_at: string | null
+          creator_id: string
+          customer_email: string | null
+          id: string
+          order_id: string | null
+          product_name: string | null
+          sale_amount: number
+          tracking_code_id: string
+        }
+        Insert: {
+          campaign_id: string
+          commission_amount: number
+          created_at?: string | null
+          creator_id: string
+          customer_email?: string | null
+          id?: string
+          order_id?: string | null
+          product_name?: string | null
+          sale_amount: number
+          tracking_code_id: string
+        }
+        Update: {
+          campaign_id?: string
+          commission_amount?: number
+          created_at?: string | null
+          creator_id?: string
+          customer_email?: string | null
+          id?: string
+          order_id?: string | null
+          product_name?: string | null
+          sale_amount?: number
+          tracking_code_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "sales_events_campaign_id_fkey"
+            columns: ["campaign_id"]
+            isOneToOne: false
+            referencedRelation: "campaigns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_events_creator_id_fkey"
+            columns: ["creator_id"]
+            isOneToOne: false
+            referencedRelation: "creators"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sales_events_tracking_code_id_fkey"
+            columns: ["tracking_code_id"]
+            isOneToOne: false
+            referencedRelation: "tracking_codes"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tracking_codes: {
         Row: {

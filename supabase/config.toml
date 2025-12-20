@@ -17,3 +17,6 @@ verify_jwt = false
 
 [functions.sync-content-views]
 verify_jwt = false
+
+[functions.claim-creator-payout]
+verify_jwt = true

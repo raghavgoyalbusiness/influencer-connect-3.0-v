@@ -69,11 +69,23 @@ export default {
           border: "hsl(var(--sidebar-border))",
           ring: "hsl(var(--sidebar-ring))",
         },
+        // Custom Finance Theme Colors
+        "neon-green": "hsl(var(--neon-green))",
+        "views-blue": "hsl(var(--views-blue))",
+        "earnings-green": "hsl(var(--earnings-green))",
       },
       borderRadius: {
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      boxShadow: {
+        "glow-primary": "var(--glow-primary)",
+        "glow-accent": "var(--glow-accent)",
+        "glow-success": "var(--glow-success)",
+        "glow-warning": "var(--glow-warning)",
+        "neon": "0 0 20px hsl(var(--neon-green) / 0.4), 0 0 40px hsl(var(--neon-green) / 0.2)",
+        "neon-blue": "0 0 20px hsl(var(--views-blue) / 0.4), 0 0 40px hsl(var(--views-blue) / 0.2)",
       },
       keyframes: {
         "accordion-down": {
@@ -96,6 +108,20 @@ export default {
           "0%, 100%": { boxShadow: "0 0 20px hsl(var(--primary) / 0.4)" },
           "50%": { boxShadow: "0 0 40px hsl(var(--primary) / 0.6)" },
         },
+        "neon-pulse": {
+          "0%, 100%": { 
+            boxShadow: "0 0 10px hsl(var(--neon-green) / 0.3), 0 0 20px hsl(var(--neon-green) / 0.2)",
+            borderColor: "hsl(var(--neon-green) / 0.5)"
+          },
+          "50%": { 
+            boxShadow: "0 0 20px hsl(var(--neon-green) / 0.5), 0 0 40px hsl(var(--neon-green) / 0.3)",
+            borderColor: "hsl(var(--neon-green) / 0.8)"
+          },
+        },
+        "shimmer": {
+          "0%": { backgroundPosition: "-200% 0" },
+          "100%": { backgroundPosition: "200% 0" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -103,6 +129,8 @@ export default {
         "fade-in": "fade-in 0.5s ease-out",
         "scale-in": "scale-in 0.3s ease-out",
         "glow-pulse": "glow-pulse 2s ease-in-out infinite",
+        "neon-pulse": "neon-pulse 2s ease-in-out infinite",
+        "shimmer": "shimmer 2s linear infinite",
       },
     },
   },
