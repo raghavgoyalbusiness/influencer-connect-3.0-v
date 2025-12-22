@@ -52,7 +52,7 @@ serve(async (req) => {
       customer_email: customerId ? undefined : email,
       line_items: [
         {
-          price: "price_1Sfq3CHF01sswCvCJ6kA3gdz", // Influencer Connect AI Priority Access
+          price: "price_1Sh9ZWHF01sswCvCYkyon1Pw", // Influencer Connect AI Priority Access
           quantity: 1,
         },
       ],
