@@ -14,6 +14,7 @@ import ThankYou from "./pages/ThankYou";
 import Admin from "./pages/Admin";
 import CampaignCreate from "./pages/CampaignCreate";
 import ContentRewards from "./pages/ContentRewards";
+import Pricing from "./pages/Pricing";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +38,7 @@ const App = () => (
             <Route path="/thank-you" element={<ThankYou />} />
             <Route path="/admin" element={<Admin />} />
             <Route path="/campaign/new" element={<CampaignCreate />} />
+            <Route path="/pricing" element={<Pricing />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </BrowserRouter>
