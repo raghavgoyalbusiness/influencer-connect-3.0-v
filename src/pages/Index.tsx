@@ -169,7 +169,7 @@ export default function Index() {
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto mb-4">
             Influencer Connect uses computer vision and real-time analytics to match brands with 
-            perfect creators. Join 5,000+ agencies on our waitlist.
+            perfect creators. Join 1,000+ users on our waitlist.
           </p>
         </div>
 
@@ -184,7 +184,7 @@ export default function Index() {
               </div>
               <div>
                 <h3 className="text-xl font-bold text-foreground">Free Waitlist</h3>
-                <p className="text-sm text-muted-foreground">Join 5,000+ others</p>
+                <p className="text-sm text-muted-foreground">Join 1,000+ others</p>
               </div>
             </div>
 
@@ -263,7 +263,7 @@ export default function Index() {
               <ul className="space-y-3 mb-6 flex-grow">
                 <li className="flex items-start gap-2 text-foreground">
                   <Gift className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
-                  <span><strong>Skip the 5,000+ person queue</strong></span>
+                  <span><strong>Skip the 1,000+ person queue</strong></span>
                 </li>
                 <li className="flex items-start gap-2 text-foreground">
                   <Zap className="w-4 h-4 text-amber-400 mt-0.5 flex-shrink-0" />
